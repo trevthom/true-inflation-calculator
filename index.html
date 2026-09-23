@@ -15,7 +15,7 @@
   main{max-width:860px;margin:0 auto;padding:32px 20px 64px}
   h1{margin:0 0 4px;font-size:1.9rem;letter-spacing:-.02em}
   .tagline{color:var(--muted);margin:0 0 24px}
-  form{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;width:50%;
+  form{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;width:50%;margin:0 auto;
     background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
   .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:220px}
   .field label{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
@@ -42,26 +42,14 @@
   .card.cpi h2{color:var(--teal)} .card.gold h2{color:var(--gold)} .card.wage h2{color:var(--text)}
   .card.cpi,.card.gold{display:flex;flex-direction:column}
   .card.cpi .story,.card.gold .story{margin-bottom:14px}
-  .card.cpi .salary,.card.gold .salary{margin-top:auto}
+  .card.cpi .big,.card.gold .big{margin-bottom:auto}
   .big{font-size:2.2rem;font-weight:800;margin:2px 0 14px;letter-spacing:-.02em}
   .card.cpi .big{color:var(--teal)} .card.gold .big{color:var(--gold)}
   .story{margin:0}
   strong{color:var(--text);font-weight:700}
   strong.teal{color:var(--teal)} strong.gold{color:var(--gold)}
-  .salary{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);
-    font-size:.92rem;color:var(--muted);
-    display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-  @media(max-width:680px){.salary{flex-direction:column;align-items:flex-start;gap:4px}}
-  .salary strong{font-size:1.05em}
-  .salary .lbl{display:block;font-size:.72rem;text-transform:uppercase;
-    letter-spacing:.06em;margin-bottom:4px;color:var(--muted)}
   .card.wage{grid-column:1 / -1}
-  .method{margin-top:24px;background:var(--panel);border:1px solid var(--line);
-    border-radius:14px;padding:16px 22px;font-size:.9rem;color:var(--muted)}
-  .method summary{cursor:pointer;color:var(--text);font-weight:600}
-  .method ul{margin:12px 0 0;padding-left:20px}
-  .method li{margin-bottom:8px}
-  footer{margin-top:26px;font-size:.8rem;color:var(--muted)}
+  footer{margin-top:26px;font-size:.8rem;color:var(--muted);text-align:center}
 </style>
 </head>
 <body>
@@ -93,13 +81,11 @@
       <h2>💵 Calculated Inflation via CPI</h2>
       <p class="big" id="cpiBig"></p>
       <p class="story" id="cpiStory"></p>
-      <p class="salary"><span class="lbl">Yearly salary equivalent (× 52 weeks)</span><span id="cpiSalary"></span></p>
     </article>
     <article class="card gold">
       <h2>🥇 Calculated Inflation via Gold</h2>
       <p class="big" id="goldBig"></p>
       <p class="story" id="goldStory"></p>
-      <p class="salary"><span class="lbl">Yearly salary equivalent (× 52 weeks)</span><span id="goldSalary"></span></p>
     </article>
     <article class="card wage">
       <h2>⚖️ MINIMUM WAGE — THEN VS. NOW</h2>
@@ -109,17 +95,7 @@
     </article>
   </section>
 
-  <details class="method">
-    <summary>Method &amp; data notes</summary>
-    <ul>
-      <li>The anchor is <strong>August 1971</strong>, set in stone — Nixon closed the gold window on August 15, 1971. There is no month/year selector.</li>
-      <li><strong>CPI:</strong> <code>amount × CPI(Aug 2026) ÷ CPI(Aug 1971)</code> = <code>amount × 334.980 ÷ 40.8</code>. Monthly CPI-U, All Urban Consumers, NSA, 1982‑84=100 (U.S. Bureau of Labor Statistics).</li>
-      <li><strong>Gold:</strong> <code>amount ÷ $35.00 = ounces</code>, then <code>ounces × live spot price</code>. The $35.00/oz anchor is the official U.S. Treasury parity price in effect in August 1971. The live price is fetched in your browser from <code>api.gold-api.com</code> (real-time spot, no key), with CoinGecko (PAX Gold) and freegoldapi.com as backups; a cached/embedded value is used only if all live sources fail.</li>
-      <li><strong>Wages:</strong> $1.60/hr was the U.S. federal minimum wage in August 1971; $7.25/hr is the current federal minimum wage. Yearly salary figures assume the entered amount is a weekly wage (× 52 weeks).</li>
-    </ul>
-  </details>
-
-  <footer>Educational tool — not investment advice. CPI: BLS via usinflationcalculator.com. Live gold: gold-api.com (fallbacks: CoinGecko, freegoldapi.com). 1971 anchor: official Treasury price of $35/oz.</footer>
+  <footer>CPI: BLS. Live gold: gold-api.com.</footer>
 </main>
 
 <script>
@@ -130,11 +106,9 @@ const NOW_LABEL   = "August 2026";
 const CPI_1971    = 40.8;      // CPI-U NSA, Aug 1971
 const CPI_NOW     = 334.980;   // CPI-U NSA, Aug 2026
 const GOLD_1971   = 35.00;     // official U.S. Treasury price, in effect Aug 1971
-const GOLD_FALLBACK = 4411.00; // used only if every live source fails (Aug 2026 avg)
 const WAGE_1971   = 1.60;      // federal minimum wage, Aug 1971 (USD/hr)
 const WAGE_NOW    = 7.25;      // federal minimum wage, current (USD/hr)
 const WEEK_HOURS  = 40;
-const WEEKS_YEAR  = 52;
 const CACHE_KEY = "goldPriceCache", CACHE_MS = 60000; // 1-minute cache
 
 /* ---- live gold price (used everywhere gold's current price appears) ---- */
@@ -167,6 +141,11 @@ async function fetchGold(force = false) {
     }
   }
   renderPrice(); calculate();
+  if (!GOLD_LIVE) {
+    const err = document.getElementById("error");
+    err.textContent = "Could not fetch a live gold price — calculations are unavailable.";
+    err.hidden = false;
+  }
 }
 
 function renderPrice() {
@@ -176,15 +155,15 @@ function renderPrice() {
     const t = GOLD_AT ? GOLD_AT.toLocaleTimeString() : "";
     s.textContent = GOLD_SRC + (GOLD_SRC.includes("real-time") ? " · as of " + t : " · " + t);
   } else {
-    v.textContent = "unavailable — using embedded fallback " + usd(GOLD_FALLBACK) + "/oz";
-    s.textContent = "live sources unreachable";
+    v.textContent = "unavailable — live sources unreachable";
+    s.textContent = "";
   }
 }
 
 /* ---- helpers ---- */
 const usd = n => n.toLocaleString("en-US",{style:"currency",currency:"USD"});
 const oz  = n => n.toLocaleString("en-US",{minimumFractionDigits:4,maximumFractionDigits:4}) + " oz";
-const goldNow = () => GOLD_LIVE || GOLD_FALLBACK;
+const goldNow = () => GOLD_LIVE;
 
 /* ---- calculation & narrative ---- */
 function calculate() {
@@ -198,6 +177,7 @@ function calculate() {
     err.hidden = false; results.hidden = true; return;
   }
   const G = goldNow();
+  if (!G) { results.hidden = true; return; }   // no live price yet
 
   /* CPI: Aug 1971 dollars → today's dollars */
   const cpiToday = amount * CPI_NOW / CPI_1971;
@@ -212,18 +192,10 @@ function calculate() {
   const ozHourNow  = WAGE_NOW / G;
   const payWeek1971 = WAGE_1971 * WEEK_HOURS;   // $64 at defaults
 
-  /* Yearly salary equivalents (amount treated as a weekly wage) */
-  const yrUsd1971 = amount * WEEKS_YEAR;
-  const yrUsdNow  = yrUsd1971 * CPI_NOW / CPI_1971;
-  const yrGoldOz  = (amount / GOLD_1971) * WEEKS_YEAR;
-  const yrGoldUsd = yrGoldOz * G;
-
   document.getElementById("cpiBig").textContent = usd(cpiToday);
   document.getElementById("cpiStory").innerHTML =
     `According to CPI measurements, <strong>${usd(amount)}</strong> in Aug 1971 could buy the same ` +
     `amount of goods/services (buying power) as <strong class="teal">${usd(cpiToday)}</strong> today, in ${NOW_LABEL}.`;
-  document.getElementById("cpiSalary").innerHTML =
-    `<strong>${usd(yrUsd1971)}</strong>/yr in Aug 1971 = <strong class="teal">${usd(yrUsdNow)}</strong>/yr in ${NOW_LABEL} (CPI).`;
 
   document.getElementById("goldBig").textContent = usd(goldToday);
   document.getElementById("goldStory").innerHTML =
@@ -232,8 +204,6 @@ function calculate() {
     `Today, with gold at <strong>${usd(G)}</strong> per ounce, that would mean you'd need ` +
     `<strong class="gold">${usd(goldToday)}</strong> to have the equivalent amount of buying power, ` +
     `measured against August 1971 in terms of gold.`;
-  document.getElementById("goldSalary").innerHTML =
-    `<strong>${oz(yrGoldOz)}</strong>/yr = <strong class="gold">${usd(yrGoldUsd)}</strong>/yr at today's gold price.`;
 
   document.getElementById("wage1971").innerHTML =
     `A minimum wage worker in Aug 1971 was making <strong>$${WAGE_1971.toFixed(2)}</strong> per hour, which would be ` +
@@ -256,8 +226,8 @@ document.getElementById("calcForm").addEventListener("submit", e => { e.preventD
 document.getElementById("amount").addEventListener("input", calculate);
 document.getElementById("refreshGold").addEventListener("click", () => fetchGold(true));
 
-calculate();            // first paint with fallback price (instant)
-fetchGold();            // then bring in the live price and re-render
+calculate();            // renders as soon as a live gold price exists
+fetchGold();            // fetch the live price, then render
 setInterval(() => fetchGold(false), CACHE_MS);   // auto-refresh every minute
 </script>
 </body>

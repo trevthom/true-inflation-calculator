@@ -42,7 +42,6 @@
   .card.cpi h2{color:var(--teal)} .card.gold h2{color:var(--gold)} .card.wage h2{color:var(--text)}
   .card.cpi,.card.gold{display:flex;flex-direction:column}
   .card.cpi .story,.card.gold .story{margin-bottom:14px}
-  .card.cpi .big,.card.gold .big{margin-bottom:auto}
   .big{font-size:2.2rem;font-weight:800;margin:2px 0 14px;letter-spacing:-.02em}
   .card.cpi .big{color:var(--teal)} .card.gold .big{color:var(--gold)}
   .story{margin:0}
@@ -91,7 +90,7 @@
       <h2>⚖️ MINIMUM WAGE — THEN VS. NOW</h2>
       <p class="story" id="wage1971" style="margin-bottom:12px"></p>
       <p class="story" id="wageNow"></p>
-      <p class="story" id="wageCompare"></p>
+      <p class="story" id="wageCompare" style="margin-top:12px"></p>
     </article>
   </section>
 
@@ -217,7 +216,7 @@ function calculate() {
 
   document.getElementById("wageCompare").innerHTML = 
     `To match the August 1971 minimum wage of <strong class="gold">${oz(ozWeek1971)}</strong> of gold per week, minimum ` +
-    `wage in USD would need to be <strong>${usd(ozWeek1971 * G)}</strong> per week.`;
+    `wage in USD would need to be <strong>${usd(ozWeek1971 * G)}</strong> per week, which is <strong>${usd(ozWeek1971 * G * 52)}</strong> per year.`;
 
   results.hidden = false;
 }

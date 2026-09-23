@@ -15,7 +15,7 @@
   main{max-width:860px;margin:0 auto;padding:32px 20px 64px}
   h1{margin:0 0 4px;font-size:1.9rem;letter-spacing:-.02em}
   .tagline{color:var(--muted);margin:0 0 24px}
-  form{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;
+  form{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;width:50%;
     background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px}
   .field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:220px}
   .field label{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
@@ -29,7 +29,7 @@
   button:hover{filter:brightness(1.08)}
   button.mini{background:#0b101b;color:var(--muted);border:1px solid var(--line);
     padding:4px 10px;font-size:.8rem;font-weight:600;border-radius:8px}
-  .pricebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:14px;
+  .pricebar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;margin-top:14px;
     font-size:.9rem;color:var(--muted)}
   .pricebar .val{color:var(--gold);font-weight:700;font-size:1.05rem}
   .pricebar .src{font-size:.78rem}
@@ -40,13 +40,18 @@
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px}
   .card h2{margin:0 0 10px;font-size:.95rem;letter-spacing:.03em}
   .card.cpi h2{color:var(--teal)} .card.gold h2{color:var(--gold)} .card.wage h2{color:var(--text)}
+  .card.cpi,.card.gold{display:flex;flex-direction:column}
+  .card.cpi .story,.card.gold .story{margin-bottom:14px}
+  .card.cpi .salary,.card.gold .salary{margin-top:auto}
   .big{font-size:2.2rem;font-weight:800;margin:2px 0 14px;letter-spacing:-.02em}
   .card.cpi .big{color:var(--teal)} .card.gold .big{color:var(--gold)}
   .story{margin:0}
   strong{color:var(--text);font-weight:700}
   strong.teal{color:var(--teal)} strong.gold{color:var(--gold)}
   .salary{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);
-    font-size:.92rem;color:var(--muted)}
+    font-size:.92rem;color:var(--muted);
+    display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  @media(max-width:680px){.salary{flex-direction:column;align-items:flex-start;gap:4px}}
   .salary strong{font-size:1.05em}
   .salary .lbl{display:block;font-size:.72rem;text-transform:uppercase;
     letter-spacing:.06em;margin-bottom:4px;color:var(--muted)}
@@ -89,10 +94,6 @@
       <p class="big" id="cpiBig"></p>
       <p class="story" id="cpiStory"></p>
       <p class="salary"><span class="lbl">Yearly salary equivalent (× 52 weeks)</span><span id="cpiSalary"></span></p>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
     </article>
     <article class="card gold">
       <h2>🥇 Calculated Inflation via Gold</h2>
@@ -246,7 +247,7 @@ function calculate() {
 
   document.getElementById("wageCompare").innerHTML = 
     `To match the August 1971 minimum wage of <strong class="gold">${oz(ozWeek1971)}</strong> of gold per week, minimum ` +
-    `wage in USD would need to be <strong>${usd(goldToday * ozWeek1971)}</strong> per week.`;
+    `wage in USD would need to be <strong>${usd(ozWeek1971 * G)}</strong> per week.`;
 
   results.hidden = false;
 }

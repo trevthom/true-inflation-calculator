@@ -210,13 +210,14 @@ function calculate() {
     `<strong>${usd(payWeek1971)}</strong> per week or <strong class="gold">${oz(ozWeek1971)}</strong> of gold per week.`;
 
   document.getElementById("wageNow").innerHTML =
-    `By today's standards, the federal minimum wage is <strong>$${WAGE_NOW.toFixed(2)}</strong> per hour, which would be ` +
+    `By today's standards, the federal minimum wage is <strong>$${WAGE_NOW.toFixed(2)}</strong> per hour, which would mean ` +
     `minimum wage workers are making <strong class="gold">${oz(ozHourNow)}</strong> of gold per hour ` +
     `(an obvious decrease in pay versus the August 1971 gold per hour).`;
 
   document.getElementById("wageCompare").innerHTML = 
     `To match the August 1971 minimum wage of <strong class="gold">${oz(ozWeek1971)}</strong> of gold per week, minimum ` +
-    `wage in USD would need to be <strong>${usd(ozWeek1971 * G)}</strong> per week, which is <strong>${usd(ozWeek1971 * G * 52)}</strong> per year.`;
+    `wage in USD would need to be <strong>${usd(ozWeek1971 * G)}</strong> per week, which is <strong>${usd(ozWeek1971 * G * 52)}</strong> per year.` +
+    ` That is not a typo.`;
 
   results.hidden = false;
 }

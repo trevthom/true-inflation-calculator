@@ -217,7 +217,7 @@ function calculate() {
   document.getElementById("wageCompare").innerHTML = 
     `To match the August 1971 minimum wage of <strong class="gold">${oz(ozWeek1971)}</strong> of gold per week, minimum ` +
     `wage in USD would need to be <strong>${usd(ozWeek1971 * G)}</strong> per week, which is <strong>${usd(ozWeek1971 * G * 52)}</strong> per year.` +
-    ` That is not a typo.`;
+    `This would require an hourly wage of <strong>${usd(ozWeek1971 * G / 40)}</strong> per hour. That is not a typo.`;
 
   results.hidden = false;
 }

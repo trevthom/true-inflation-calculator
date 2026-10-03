@@ -48,6 +48,17 @@
   strong{color:var(--text);font-weight:700}
   strong.teal{color:var(--teal)} strong.gold{color:var(--gold)}
   .card.wage{grid-column:1 / -1}
+  .card.progression{margin-top:16px}
+  .card.progression h2{color:var(--gold);margin-bottom:12px}
+  table.wage{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:4px}
+  table.wage th,table.wage td{text-align:left;padding:7px 10px}
+  table.wage th{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600;border-bottom:1px solid var(--line)}
+  table.wage td{border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  table.wage tr:last-child td{border-bottom:none}
+  table.wage td.num{text-align:right}
+  table.wage td.gold{color:var(--gold);font-weight:700}
+  table.wage tr.spacer td{border:none;height:14px;padding:0}
+  @media(max-width:680px){table.wage{font-size:.78rem}table.wage th,table.wage td{padding:6px 4px}}
   footer{margin-top:26px;font-size:.8rem;color:var(--muted);text-align:center}
 </style>
 </head>
@@ -94,6 +105,18 @@
     </article>
   </section>
 
+  <section id="progression" class="card progression" hidden>
+    <h2>🏅 THE PROGRESSION OF MINIMUM WAGE IN TERMS OF GOLD</h2>
+    <p class="story" style="margin-bottom:12px">A real money is one that is not decided by someone's decree. Real money is agreed upon by those who agree to use it as such. Historically, gold has been that money, due to its scarcity and low inflation rate (among other properties).</p>
+    <p class="story" style="margin-bottom:12px">When we measure minimum wage in terms of today's gold price (i.e. real money), based on how much gold the minimum wage could buy, how has the average salary of minimum wage workers, from Aug 1971 forward, changed?</p>
+    <table class="wage">
+      <thead>
+        <tr><th>Date</th><th class="num">Min. Wage</th><th class="num">Gold/oz</th><th class="num">Gold oz / Week</th><th class="num">Yearly Salary (Today's Gold)</th></tr>
+      </thead>
+      <tbody id="wageProgBody"></tbody>
+    </table>
+  </section>
+
   <footer>CPI: BLS. Live gold: gold-api.com.</footer>
 </main>
 
@@ -109,6 +132,26 @@ const WAGE_1971   = 1.60;      // federal minimum wage, Aug 1971 (USD/hr)
 const WAGE_NOW    = 7.25;      // federal minimum wage, current (USD/hr)
 const WEEK_HOURS  = 40;
 const CACHE_KEY = "goldPriceCache", CACHE_MS = 60000; // 1-minute cache
+
+/* Historical federal minimum wage, the gold price at the time, and the gold
+   bought per 40-hour week. Yearly figures are computed live from today's gold. */
+const WAGE_HISTORY = [
+  ["Aug 1971", "$1.60", "$35.00",  1.8286],
+  ["May 1974", "$2.00", "$168.50", 0.4748],
+  ["Jan 1975", "$2.10", "$175.00", 0.4800],
+  ["Jan 1976", "$2.30", "$140.35", 0.6556],
+  ["Jan 1978", "$2.65", "$168.20", 0.6302],
+  ["Jan 1979", "$2.90", "$226.80", 0.5115],
+  ["Jan 1980", "$3.10", "$559.50", 0.2216],
+  ["Jan 1981", "$3.35", "$597.50", 0.2243],
+  ["Apr 1990", "$3.80", "$368.40", 0.4126],
+  ["Apr 1991", "$4.25", "$357.50", 0.4755],
+  ["Oct 1996", "$4.75", "$378.65", 0.5018],
+  ["Sep 1997", "$5.15", "$324.50", 0.6348],
+  ["Jul 2007", "$5.85", "$684.30", 0.3420],
+  ["Jul 2008", "$6.55", "$928.00", 0.2823],
+  ["Jul 2009", "$7.25", "$951.50", 0.3048]
+];
 
 /* ---- live gold price (used everywhere gold's current price appears) ---- */
 let GOLD_LIVE = null, GOLD_SRC = "", GOLD_AT = null;
@@ -218,6 +261,21 @@ function calculate() {
     `To match the August 1971 minimum wage of <strong class="gold">${oz(ozWeek1971)}</strong> of gold per week, minimum ` +
     `wage in USD would need to be <strong>${usd(ozWeek1971 * G)}</strong> per week, which is <strong>${usd(ozWeek1971 * G * 52)}</strong> per year. ` +
     `This would require an hourly wage of <strong>${usd(ozWeek1971 * G / 40)}</strong> per hour. That is not a typo.`;
+
+  /* Progression of minimum wage in terms of today's gold price */
+  const prog = document.getElementById("progression"), tbody = document.getElementById("wageProgBody");
+  if (!G) { prog.hidden = true; }
+  else {
+    const todayOzWeek = WAGE_NOW / G * WEEK_HOURS;
+    tbody.innerHTML = WAGE_HISTORY.map(([date, wage, price, ozWeek]) =>
+      `<tr><td>${date}</td><td class="num">${wage}/hr</td><td class="num">${price}/oz</td>` +
+      `<td class="num">${oz(ozWeek)}</td><td class="num gold">${usd(ozWeek * G * 52)}</td></tr>`
+    ).join("")
+      + `<tr class="spacer"><td colspan="5"></td></tr>`
+      + `<tr><td>Today</td><td class="num">$${WAGE_NOW.toFixed(2)}/hr</td><td class="num">${usd(G)}/oz</td>` +
+        `<td class="num">${oz(todayOzWeek)}</td><td class="num gold">${usd(todayOzWeek * G * 52)}</td></tr>`;
+    prog.hidden = false;
+  }
 
   results.hidden = false;
 }
